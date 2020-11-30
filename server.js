@@ -3,12 +3,12 @@ fs = require('fs'),
 url = require('url');
 
 http.createServer((request, response) => {
-  let addr = request.url,
+  var addr = request.url,
   q = url.parse(addr, true),
   filePath = '';
 
-  if (q.pathname.includes('document')) {
-    filePath = (__dirname + '/document.html');
+  if (q.pathname.includes('documentation')) {
+    filePath = (__dirname + '/documentation.html');
   } else {
     filePath = 'index.html';
   }
@@ -19,6 +19,19 @@ http.createServer((request, response) => {
     } else {
       console.log('Added to log.');
     }
-  })
-}).listen(8080)
-console.log('My test server is finally running on Port 8080.');
+
+  });
+
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      throw err;
+    }
+
+    response.writeHead(200, { 'Content-Type': 'text/html' });
+    response.write(data);
+    response.end();
+
+  });
+
+}).listen(8080);
+console.log('My test server is running on Port 8080.');
