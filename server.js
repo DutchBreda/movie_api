@@ -7,8 +7,8 @@ http.createServer((request, response) => {
   q = url.parse(addr, true),
   filePath = '';
 
-  if (q.pathname.includes('documentation')) {
-    filePath = (__dirname + '/documentation.html');
+  if (q.pathname.includes('document')) {
+    filePath = (__dirname + '/document.html');
   } else {
     filePath = 'index.html';
   }
