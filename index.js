@@ -1,94 +1,44 @@
 const express = require('express');
- morgan = require('morgan');
+  morgan = require('morgan');
 
-const app = express();
-const bodyParser = require('body-parser'),
-  methodOverride = require('method-override');
+  const app = express();
 
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+let myLogger = (req, res, next) => {
+  console.log(req.url);
+  next();
+};
 
-app.use(bodyParser.json());
-app.use(methodOverride());
+let requestTime = (req, res, next) => {
+  req.requestTime = Date.now();
+  next();
+};
 
-// Top 10 dutch movies
-let topMovies = [
-    {
-      title: 'Zwartboek (2006)',
-      director: 'Paul Verhoeven'
-    },
-    {
-      title: 'Karakter (1997)',
-      director: 'Mike van Diem'
-    },
-    {
-      title: 'Rabat (2011)',
-      director: 'Victor D. Ponten, Jim Taihuttu'
-    }
-    {
-      title: 'Het Zakmes (1992)',
-      director: 'Ben Sombogaart'
-    },
-    {
-      title: 'Madelief: Krassen in het tafelblad (1998)',
-      director: 'Ineke Houtman'
-    },
-    {
-      title: 'Oorlogswinter (2008)',
-      director: 'Martin Koolhoven'
-    }
-    {
-      title: 'De Aanslag (1986)',
-      director: 'Fons Rademakers'
-    },
-    {
-      title: 'Alles is liefde (2007)',
-      director: 'Joram Lürsen'
-    },
-    {
-      title: 'De dominee (2004)',
-      director: 'Gerrard Verhagen'
-    }
-    {
-      title: 'Amsterdamned (1988)',
-      director: 'Dick maas'
-    }
-  ];
+app.use(myLogger);
+app.use(requestTime);
+app.use(morgan('common')); //Morgan login
+app.use(express.static("public")); //Retrieving files from public folder
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+}); //Error Handling
 
-  //Error handling in Express
-  app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-  });
-  
-  // GET requests
-  app.get('/', (req, res) => {
-    res.send('Welcome to my Dutch movie club!');
-  });
-  
-  app.get('/documentation', (req, res) => {                  
-    res.sendFile('public/documentation.html', { root: __dirname });
-  });
-  
-  app.get('/movies', (req, res) => {
-    res.json(topMovies);
-  });
-  
-  // listen for requests
-  app.listen(8080, () =>
-    console.log('Your app is listening on port 8080.');
-  );
- 
-  // GET requests
-  app.get('/', (req, res) => {
-    res.send('Welcome to my Dutch movie club!');
-  });
-  
-  app.get('/documentation', (req, res) => {                  
-    res.sendFile('public/documentation.html', { root: __dirname });
-  });
-  
-  app.get('/movies', (req, res) => {
-    res.json(topMovies);
-  });
+app.get('/documentation', (req, res) => {                  
+  res.sendFile('public/documentation.html', { root: __dirname });
+}); //Get Request for documentation.html
+
+app.get('/', (req, res) => {
+  let responseText = 'Welcome to my app!';
+  responseText += '<small>Requested at: ' + req.requestTime + '</small>';
+  res.send(responseText);
+});
+
+app.get('/secreturl', (req, res) => {
+  let responseText = 'This is a secret url with super top-secret content.';
+  responseText += '<small>Requested at: ' + req.requestTime + '</small>';
+  res.send(responseText);
+
+});
+
+app.listen(8080, () => {
+  console.log('Your app is listening on port 8080.');
+});
