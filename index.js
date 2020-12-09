@@ -22,10 +22,6 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 }); //Error Handling
 
-app.get('/documentation', (req, res) => {                  
-  res.sendFile('public/documentation.html', { root: __dirname });
-}); //Get Request for documentation.html
-
 app.get('/', (req, res) => {
   let responseText = 'Welcome to my app!';
   responseText += '<small>Requested at: ' + req.requestTime + '</small>';
