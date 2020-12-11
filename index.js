@@ -3,6 +3,8 @@ const express = require('express');
 
   const app = express();
 
+  var movies = ["topMovies", "Director", "Year"];
+
 let myLogger = (req, res, next) => {
   console.log(req.url);
   next();
@@ -23,13 +25,21 @@ app.use((err, req, res, next) => {
 }); //Error Handling
 
 app.get('/', (req, res) => {
-  let responseText = 'Welcome to my app!';
+  let responseText = 'Welcome to my Movie app!';
   responseText += '<small>Requested at: ' + req.requestTime + '</small>';
   res.send(responseText);
 });
 
 app.get('/movies', (req, res) => {
   res.json(topMovies);
+});
+
+app.get('/movies', (req, res) => {
+  res.json(Director);
+});
+
+app.get('/movies', (req, res) => {
+  res.json(Year);
 });
 
 app.listen(8080, () => {
